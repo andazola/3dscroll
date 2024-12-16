@@ -12,7 +12,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/OBJLoader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/MTLLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/materials/MeshStandardMaterial.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/STLLoader.js"></script>
 </head>
 <body>
   <script>
@@ -34,21 +34,21 @@
 
     // Load MTL (Materials) and OBJ (Geometry)
     const mtlLoader = new THREE.MTLLoader();
-    mtlLoader.load('https://drive.google.com/uc?export=download&id=1Y5Mc8qBKe6o-QVgfEnkIB3EtmRAymCD4', (materials) => {
+    mtlLoader.load('https://raw.githubusercontent.com/andazola/3d-models/main/platinum-cube.mtl', (materials) => {
       materials.preload();
 
       const objLoader = new THREE.OBJLoader();
       objLoader.setMaterials(materials);
 
       // Load OBJ model and apply materials
-      objLoader.load('https://drive.google.com/uc?export=download&id=1CSd2CK8spUPwLv68OUfvkXNRfWwDxAXR', (object) => {
+      objLoader.load('https://raw.githubusercontent.com/andazola/3d-models/main/platinum-cube.obj', (object) => {
         object.position.set(0, -1, 0); // Center the object
         object.scale.set(1, 1, 1); // Adjust scale if needed
         scene.add(object);
         
         // Apply texture once the model is loaded
         const textureLoader = new THREE.TextureLoader();
-        textureLoader.load('https://drive.google.com/uc?export=download&id=1K1tx7MCIH2VfyG36Jcm1AWumU9ek2hem', (texture) => {
+        textureLoader.load('https://raw.githubusercontent.com/andazola/3d-models/main/platinum-cube-ai-brush-removebg-i4lw1cza.png', (texture) => {
           object.traverse((child) => {
             if (child instanceof THREE.Mesh) {
               child.material.map = texture;
@@ -60,7 +60,7 @@
     });
 
     // Camera position
-    camera.position.set(0, 0, 5);
+    camera.position.z = 5;
 
     // Animation loop
     const animate = function () {
