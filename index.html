@@ -1,86 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Model Viewer</title>
-  <style>
-    body { margin: 0; overflow: hidden; }
-    canvas { display: block; }
-  </style>
-  <!-- Include Three.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/OBJLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/MTLLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/materials/MeshStandardMaterial.js"></script>
-</head>
-<body>
-  <script>
-    // Initialize scene, camera, and renderer
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+// Load MTL (Materials) and OBJ (Geometry)
+const mtlLoader = new THREE.MTLLoader();
+mtlLoader.load('https://drive.google.com/uc?export=download&id=1Y5Mc8qBKe6o-QVgfEnkIB3EtmRAymCD4', (materials) => {
+  materials.preload();
 
-    // Add lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1); // Soft white light
-    scene.add(ambientLight);
+  const objLoader = new THREE.OBJLoader();
+  objLoader.setMaterials(materials);
+
+  // Load OBJ model and apply materials
+  objLoader.load('https://drive.google.com/uc?export=download&id=1CSd2CK8spUPwLv68OUfvkXNRfWwDxAXR', (object) => {
+    object.position.set(0, -1, 0); // Center the object
+    object.scale.set(1, 1, 1); // Adjust scale if needed
+    scene.add(object);
     
-    // Directional light for more definition
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(5, 5, 5);
-    scene.add(directionalLight);
-
-    // Load MTL (Materials) and OBJ (Geometry)
-    const mtlLoader = new THREE.MTLLoader();
-    mtlLoader.load('https://drive.google.com/uc?export=download&id=1vPbDdNdOG5Ty7GqqCO2XmWUaAP_hrCg1', (materials) => {
-      materials.preload();
-
-      const objLoader = new THREE.OBJLoader();
-      objLoader.setMaterials(materials);
-
-      // Load OBJ model and apply materials
-      objLoader.load('https://drive.google.com/uc?export=download&id=1CSd2CK8spUPwLv68OUfvkXNRfWwDxAXR', (object) => {
-        console.log("OBJ model loaded", object); // Debugging message
-        object.position.set(0, -1, 0); // Center the object
-        object.scale.set(1, 1, 1); // Adjust scale if needed
-        scene.add(object);
-        
-        // Now apply the texture once the model is loaded
-        const textureLoader = new THREE.TextureLoader();
-        textureLoader.load('https://drive.google.com/uc?export=download&id=1K1tx7MCIH2VfyG36Jcm1AWumU9ek2hem', (texture) => {
-          console.log("Texture loaded", texture); // Debugging message
-          object.traverse((child) => {
-            if (child instanceof THREE.Mesh) {
-              child.material.map = texture;
-              child.material.needsUpdate = true;
-            }
-          });
-        }, undefined, (error) => {
-          console.error('Error loading texture:', error); // Handle texture loading errors
-        });
-      }, undefined, (error) => {
-        console.error('Error loading OBJ:', error); // Handle OBJ loading errors
+    // Apply texture once the model is loaded
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load('https://drive.google.com/uc?export=download&id=1K1tx7MCIH2VfyG36Jcm1AWumU9ek2hem', (texture) => {
+      object.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+          child.material.map = texture;
+          child.material.needsUpdate = true;
+        }
       });
     });
-
-    // Camera position
-    camera.position.z = 5;
-
-    // Animation loop
-    const animate = function () {
-      requestAnimationFrame(animate);
-      renderer.render(scene, camera);
-    };
-    animate();
-
-    // Handle window resize
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-  </script>
-</body>
-</html>
+  });
+});
